@@ -81,8 +81,9 @@ export default {
 
 		try {
 			await verifyTurnstile(turnstileToken);
-		} catch (e) {
-			return Response.json({ errors: { turnstile: e } }, {
+		// @ts-ignore
+		} catch (e: { message: string }) {
+			return Response.json({ errors: { turnstile: e.message } }, {
 				status: 400,
 				headers: corsHeaders
 			});
