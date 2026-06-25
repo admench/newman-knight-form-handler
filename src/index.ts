@@ -39,7 +39,7 @@ export default {
 		const subject = `Contact form submission from ${body.get('name')}`;
 		const rawEmail = {
 			to: RECIPIENT_EMAIL,
-			from: `welcome@${YOUR_DOMAIN}`,
+			from: `website@${YOUR_DOMAIN}`,
 			replyTo: body.get('email'),
 			subject,
 			html: `
