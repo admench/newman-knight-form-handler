@@ -97,6 +97,10 @@ web_modules/
 .cache
 .parcel-cache
 
+# Jetbrains
+
+.idea
+
 # Next.js build output
 
 .next
