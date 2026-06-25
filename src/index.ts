@@ -148,9 +148,12 @@ async function verifyTurnstile(token: string, remoteIp?: string) {
 			})
 		})
 
-		const response = await result.json();
+		const response: { success: boolean } = await result.json();
 
 		console.log('Turnstile response: ', JSON.stringify(response));
+		if (!response.success) {
+			throw new Error('Security check failed');
+		}
 	} catch (e) {
 		throw new Error('Security check failed');
 	}
