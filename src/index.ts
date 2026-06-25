@@ -11,7 +11,7 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 const YOUR_DOMAIN = 'newmanknight.co.uk';
-const RECIPIENT_EMAIL = 'adam@youi.design';
+const RECIPIENT_EMAIL = ['adam@youi.design', 'mark@newmanknight.co.uk'];
 const TURNSTILE_SECRET_KEY = '0x4AAAAAADqaPt9kjB0RgSvUY1qAqOE0uQ4';
 const TURNSTILE_SITE_KEY = '0x4AAAAAADqaPlYE62V0X6Hi';
 
@@ -92,8 +92,8 @@ export default {
 		const subject = `Contact form submission from ${name}`;
 		const rawEmail = {
 			to: RECIPIENT_EMAIL,
-			from: `website@${YOUR_DOMAIN}`,
-			replyTo: body.get('email'),
+			from: {email: `website@${YOUR_DOMAIN}`, name: 'Newman Knight website'},
+			replyTo: body.get('email') as string,
 			subject,
 			html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
