@@ -33,7 +33,10 @@ export default {
 			});
 		}
 		if (request.method !== 'POST') {
-			return Response.json({ data: { errors: ['Method not allowed'] } }, { status: 400, headers: corsHeaders });
+			return Response.json({ errors: { method: 'Method not allowed' } }, {
+				status: 400,
+				headers: corsHeaders
+			});
 		}
 
 		const body: FormData = await request.formData();
@@ -46,7 +49,10 @@ export default {
 		const errors: ContactErrors = {};
 
 		if (!body || typeof body !== 'object') {
-			return Response.json({ data: { errors: ['Please fill out the form'] } }, { status: 400, headers: corsHeaders });
+			return Response.json({ errors: { form: 'Please fill out the form' } }, {
+				status: 400,
+				headers: corsHeaders
+			});
 		}
 
 		if (name.length < 2 || name.length > 100) {
@@ -70,13 +76,16 @@ export default {
 		}
 
 		if (Object.keys(errors).length > 0) {
-			return Response.json({ data: { errors } }, { status: 400, headers: corsHeaders });
+			return Response.json({ errors }, { status: 400, headers: corsHeaders });
 		}
 
 		try {
 			await verifyTurnstile(turnstileToken);
 		} catch (e) {
-			return Response.json({ data: { errors: { turnstile: e } } }, { status: 400, headers: corsHeaders });
+			return Response.json({ errors: { turnstile: e } }, {
+				status: 400,
+				headers: corsHeaders
+			});
 		}
 
 
@@ -109,7 +118,7 @@ export default {
 		await env.EMAIL.send(rawEmail);
 
 		return new Response('OK', {
-			headers: corsHeaders,
+			headers: corsHeaders
 		});
 	}
 } satisfies ExportedHandler<Env>;
