@@ -134,22 +134,23 @@ async function verifyTurnstile(token: string, remoteIp?: string) {
 		throw new Error('Turnstile is not configured');
 	}
 
-	const formData = new FormData();
-	formData.append('secret', TURNSTILE_SECRET_KEY);
-	formData.append('response', token);
+	try {
+		const result = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+			method: 'POST',
+			headers: {
+          "Content-Type": "application/json",
+        },
+			body: JSON.stringify({
+				secret: TURNSTILE_SECRET_KEY,
+				response: token,
+				remoteip: remoteIp ?? undefined
+			})
+		})
 
-	if (remoteIp) {
-		formData.append('remoteip', remoteIp);
+		const response = await result.json();
+
+		console.log('Turnstile response: ', JSON.stringify(response));
+	} catch (e) {
+		throw new Error('Security check failed');
 	}
-
-	const result = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-		method: 'POST',
-		body: formData
-	}).catch(() => ({ success: false }));
-
-	console.log('Turnstile result: ', JSON.stringify(result));
-
-	// if (result?.success === false) {
-	// 	throw new Error('Security check failed');
-	// }
 }
