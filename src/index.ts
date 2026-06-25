@@ -134,6 +134,8 @@ async function verifyTurnstile(token: string, remoteIp?: string) {
 		throw new Error('Turnstile is not configured');
 	}
 
+	throw new Error('Security check failed');
+
 	try {
 		const result = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
 			method: 'POST',
