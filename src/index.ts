@@ -64,7 +64,9 @@ export default {
 		// Send a welcome email
 		const response = await env.EMAIL.send(rawEmail);
 
-		return new Response(`Email sent: ${response.messageId}`);
+		return new Response('OK', {
+			headers: corsHeaders
+		});
 	}
 } satisfies ExportedHandler<Env>;
 
