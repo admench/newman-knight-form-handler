@@ -10,9 +10,55 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
+const YOUR_DOMAIN = "newmanknight.co.uk";
+const RECIPIENT_EMAIL = "adam@youi.design";
 
 export default {
-	async fetch(request, env, ctx): Promise<Response> {
-		return new Response("Hello World!");
-	},
+  async fetch(request: Request, env: Env): Promise<Response> {
+		if (request.method !== 'POST') {
+			return Response.json({ data: { errors: ['Method not allowed'] }}, { status: 400 });
+		}
+
+		const body: FormData = await request.formData();
+
+		if (!body || typeof body !== 'object') {
+			return Response.json({ data: { errors: ['Please fill out the form'] }}, { status: 400 });
+    }
+
+		const subject = `Contact form submission from ${body.get('name')}`
+		const rawEmail = {
+        to: RECIPIENT_EMAIL,
+      	from: `welcome@${YOUR_DOMAIN}`,
+        replyTo: body.get('email'),
+        subject,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h1>${subject}</h1>
+            <p style="color: #777; font-size: 12px;">Sent: ${new Date().toLocaleDateString()}</p>
+            <p></p>
+            <p>Dear Mark,<br/>
+            You have received a message from the website contact form:</p>
+
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+              <h3>Contact Details</h3>
+              <p><strong>Name:</strong> ${body.get('name')}</p>
+              <p><strong>Email:</strong> ${body.get('email')}</p>
+              <p><strong>Phone:</strong> ${body.get('phone')}</p>
+              <p><strong>Message:</strong> ${body.get('message')}</p>
+            </div>
+          </div>
+        `
+    }
+
+    // Send a welcome email
+    const response = await env.EMAIL.send(rawEmail);
+
+    return new Response(`Email sent: ${response.messageId}`);
+  },
 } satisfies ExportedHandler<Env>;
+
+
+function normalizeInput(value: unknown) {
+    return typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : ''
+}
+
