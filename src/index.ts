@@ -89,7 +89,7 @@ export default {
 		}
 
 
-		const subject = `Contact form submission from ${name}`;
+		const subject = `Contact form submission from ${name} - ${new Date().toUTCString()}`;
 		const rawEmail = {
 			to: RECIPIENT_EMAIL,
 			from: {email: `website@${YOUR_DOMAIN}`, name: 'Newman Knight website'},
@@ -97,7 +97,7 @@ export default {
 			subject,
 			html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-            <h1>${subject}</h1>
+            <h1>Contact form submission from ${name}</h1>
             <p style="color: #777; font-size: 12px;">Sent: ${new Date().toLocaleDateString()}</p>
             <p></p>
             <p>Dear Mark,<br/>
