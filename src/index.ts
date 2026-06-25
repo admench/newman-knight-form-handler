@@ -142,14 +142,12 @@ async function verifyTurnstile(token: string, remoteIp?: string) {
 		formData.append('remoteip', remoteIp);
 	}
 
-	const result: Response | {
-		success: boolean
-	} = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+	const result = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
 		method: 'POST',
 		body: formData
 	}).catch(() => ({ success: false }));
 
-	console.log('Turnstile result: ', result);
+	console.log('Turnstile result: ', JSON.stringify(result));
 
 	// if (result?.success === false) {
 	// 	throw new Error('Security check failed');
