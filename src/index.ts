@@ -149,6 +149,8 @@ async function verifyTurnstile(token: string, remoteIp?: string) {
 		body: formData
 	}).catch(() => ({ success: false }));
 
+	console.log('Turnstile result: ', result);
+
 	// if (result?.success === false) {
 	// 	throw new Error('Security check failed');
 	// }
