@@ -11,7 +11,7 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 const YOUR_DOMAIN = 'newmanknight.co.uk';
-const RECIPIENT_EMAIL = ['adam@youi.design', 'mark@newmanknight.co.uk'];
+const RECIPIENT_EMAIL = ['mark@newmanknight.co.uk'];
 const TURNSTILE_SECRET_KEY = '0x4AAAAAADqaPt9kjB0RgSvUY1qAqOE0uQ4';
 const TURNSTILE_SITE_KEY = '0x4AAAAAADqaPlYE62V0X6Hi';
 
