@@ -17,7 +17,7 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAADqaPlYE62V0X6Hi';
 
 type ContactErrors = Partial<Record<'name' | 'email' | 'phone' | 'message' | 'turnstile', string>>
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const phonePattern = /^[+()\d\s.-]{7,30}$/;
+const phonePattern = /^\d{11}$/;
 
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
@@ -63,8 +63,8 @@ export default {
 			errors.email = 'Please enter a valid email address';
 		}
 
-		if (!phonePattern.test(phone)) {
-			errors.phone = 'Please enter a valid phone number';
+		if (!phonePattern.test(phone.replace(/\s/g, ''))) {
+			errors.phone = 'Please enter a phone number with exactly 11 digits';
 		}
 
 		if (message.length < 10 || message.length > 4000) {

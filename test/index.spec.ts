@@ -1,9 +1,4 @@
-import {
-	env,
-	createExecutionContext,
-	waitOnExecutionContext,
-	SELF,
-} from "cloudflare:test";
+import { env } from "cloudflare:test";
 import { describe, it, expect } from "vitest";
 import worker from "../src/index";
 
@@ -11,19 +6,46 @@ import worker from "../src/index";
 // `Request` to pass to `worker.fetch()`.
 const IncomingRequest = Request<unknown, IncomingRequestCfProperties>;
 
-describe("Hello World worker", () => {
-	it("responds with Hello World! (unit style)", async () => {
-		const request = new IncomingRequest("http://example.com");
-		// Create an empty context to pass to `worker.fetch()`.
-		const ctx = createExecutionContext();
-		const response = await worker.fetch(request, env, ctx);
-		// Wait for all `Promise`s passed to `ctx.waitUntil()` to settle before running test assertions
-		await waitOnExecutionContext(ctx);
-		expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
+async function submitPhone(phone: string) {
+	const body = new FormData();
+	body.set("name", "Test User");
+	body.set("email", "test@example.com");
+	body.set("phone", phone);
+	body.set("message", "A test contact form message.");
+	// Omit Turnstile so tests stop at validation without external calls or emails.
+	const request = new IncomingRequest("https://example.com", { method: "POST", body });
+	return worker.fetch(request, env);
+}
+
+describe("Contact form phone validation", () => {
+	it.each([
+		"079544083",
+		"0795440831",
+		"079544083123",
+		"07954 4083",
+		"",
+		"abcdefghijk",
+		"0795440831a",
+		"+447954408312",
+	])("rejects an invalid phone number: %s", async (phone) => {
+		const response = await submitPhone(phone);
+		expect(response.status).toBe(400);
+		expect(await response.json()).toEqual({
+			errors: {
+				phone: "Please enter a phone number with exactly 11 digits",
+				turnstile: "Please complete the security check",
+			},
+		});
 	});
 
-	it("responds with Hello World! (integration style)", async () => {
-		const response = await SELF.fetch("https://example.com");
-		expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
-	});
+	it.each(["07954408312", "02079460958", "07954 408312", " 07954408312 "])(
+		"accepts an 11-digit phone number: %s",
+		async (phone) => {
+			const response = await submitPhone(phone);
+			expect(response.status).toBe(400);
+			expect(await response.json()).toEqual({
+				errors: { turnstile: "Please complete the security check" },
+			});
+		},
+	);
 });
